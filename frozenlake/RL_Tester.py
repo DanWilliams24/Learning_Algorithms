@@ -111,5 +111,5 @@ if __name__ == '__main__':
     fast_mode = int(input("Fast Mode On/Off? [1/0] "))
     my_agent = Agent_Tester("frozenlake_agent_model.csv", trials, abs(fast_mode-1), not bool(fast_mode))
     percentage_correct = my_agent()
-    print("The model has an accuracy of {} across {} episodes".format(round(percentage_correct), my_agent.num_episodes))
+    print("The model has an accuracy of {} across {} episodes".format(percentage_correct, my_agent.num_episodes))
 
