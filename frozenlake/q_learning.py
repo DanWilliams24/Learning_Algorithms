@@ -5,7 +5,7 @@ import gym
 import matplotlib.pyplot as plt
 from RL_Tester import Agent_Tester
 
-'''Homework: (Frozen Lake)
+''' Frozen Lake Problem
 - have your grid marking different states
 - start from state s
 - want to reach g without falling into a hole (game over)
