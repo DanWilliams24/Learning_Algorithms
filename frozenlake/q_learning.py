@@ -15,7 +15,7 @@ from RL_Tester import Agent_Tester
 
 class ReinforcementLearner:
     def __init__(self, num_episodes=10000, max_steps_per_episode=100, exploration_decay_rate=0.001, data_collection_interval=100, output_allowed=True):
-        self.env = gym.make("FrozenLake-v0")
+        self.env = gym.make("FrozenLake-v1")
         state_space_size = self.env.observation_space.n
         action_space_size = self.env.action_space.n
         self.q_table = np.zeros((state_space_size, action_space_size))
