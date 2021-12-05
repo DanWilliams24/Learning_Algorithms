@@ -35,7 +35,7 @@ class Agent_Tester:
         else:
             raise ValueError("A valid filename or a populated Q-table is needed to run Agent Testing")
 
-        self.env = gym.make("FrozenLake-v0")
+        self.env = gym.make("FrozenLake-v1")
         self.current_state = 0
         self.num_episodes = num_episodes
         self.delay = delay
