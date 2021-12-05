@@ -1,0 +1,173 @@
+
+import random
+
+class Chromosome:
+    # static variable used to keep track of chromosomes over lifetime of evolutionary algorithm
+    HISTORICAL_NUMBER = 0
+
+    def __init__(self, bitstring="000000"):
+        #print(bitstring.split())
+        self.genes = [bit for bit in bitstring]
+        self.historical_marker = Chromosome.HISTORICAL_NUMBER
+        # update historical number for newer individuals
+        Chromosome.HISTORICAL_NUMBER += 1
+
+    def get_fitness(self):
+        fitness = 0
+        for i in range(len(self.genes)):
+            #print(type(self.genes[i]))
+            if self.genes[i] == "1":
+                fitness += 1
+
+        return fitness
+    
+    def get_chromosome(self):
+        return self.genes
+
+
+    def get_gene(self, index):
+        return self.genes[index]
+
+    def __len__(self):
+        return len(self.genes)
+
+    def __str__(self) -> str:
+        return "".join(str(bit) for bit in self.genes) + ":" + str(self.get_fitness())
+
+    def __repr__(self) -> str:
+        return "".join(str(bit) for bit in self.genes) + ":" + str(self.get_fitness())
+
+
+class Evolution:
+    def __init__(self, max_pop):
+        # composed of individuals
+        self.population = []
+        self.max_population = max_pop
+        self.mutation_probability = 0.1
+        self.max_generations = 50
+
+        #used to terminate the GA if fitness plateaus
+        self.termination_buffer= []
+        self.max_plateau_time = 10
+
+
+    def init_population(self):
+        for i in range(self.max_population):
+            bitstring = ""
+            for i in range(6):
+                bitstring += str(random.randint(0,1))
+            self.add_individual(Chromosome())
+
+    def check_for_termination(self):
+        #termination buffer stores a list of recent fitness measurements
+        # we take the points in the buffer and calculate the slope 
+        #if zero return 0
+        avg_X = sum(range(1,len(self.termination_buffer)+1)) / len(self.termination_buffer)
+        avg_Y = sum(self.termination_buffer) / len(self.termination_buffer)
+
+        summation = 0
+        least_squares = 0
+        for i in range(len(self.termination_buffer)):
+            summation += ((i+1)-avg_X)*(self.termination_buffer[i]-avg_Y)
+            least_squares += ((i+1)-avg_X)**2
+
+        slope = summation/least_squares
+        return 
+
+
+    def evolve(self):
+        # create population
+        self.init_population()
+        print(f"Initial Population: {self.population}")
+        # keep evolution going until max fitness is achieved
+        gen_count = 0
+        while(self.population[0].get_fitness() < 6 and gen_count < self.max_generations):
+            print(f"Generation {gen_count}: {self.population}")
+            #performs selection, then crossover, then mutation, then compute fitness 
+            self.perform_selection()
+            gen_count += 1
+        print(f"Fittest: {self.population[0]}")
+            
+
+    def add_individual(self, individual):
+        if(len(self.population) == self.max_population):
+            self.population.pop(self.max_population-1)
+        
+        if(len(self.population) == 0):
+            self.population.append(individual)
+        else:
+            inserted = False
+            for i in range(len(self.population)):
+                if(individual.get_fitness() > self.population[i].get_fitness()):
+                    print(f"Inserting {individual} at position {i} in {self.population} ")
+                    self.population.insert(i, individual)
+                    inserted = True
+                    break
+            if(not inserted):
+                self.population.append(individual)
+        
+        #print(f"{individual}:{individual.get_fitness()}")
+
+
+    # this selection method only takes the most fit individuals for reproduction
+    # pros: Ensures optimal solutions are encouraged
+    # cons: if a non-optimal configuration is found to be the most fit in the population,
+    # it may suffer from problems converging upon local minima versus the global minimum
+    def perform_selection(self):
+        # select N fittest individuals 
+        # these are O(1) operations since we sort individuals on insertion
+        first_fittest = self.population[0]
+        second_fittest = self.population[1]
+
+
+        # crossover N/2 pairs
+        self.crossover_individuals(first_fittest, second_fittest)
+
+
+    def mutate_offspring(self, bitstring):
+        for i in range(len(bitstring)):
+            choice = random.random()
+            #print(f"mutate:{choice} -> {choice >= 1-self.mutation_probability}")
+            if(choice >= 1-self.mutation_probability):
+                #print(f"modifying {bitstring[i]}")
+                if(bitstring[i] == "0"):
+                    bitstring = bitstring[:i] + "1" + bitstring[i+1:]
+                else:
+                    bitstring = bitstring[:i] + "0" + bitstring[i+1:]
+            #print(bitstring)
+        return bitstring
+
+
+    def crossover_individuals(self, individualA, individualB):
+        # select crossover point, but make sure the point chosen
+        # is within the range of the shortest gene length between the two individuals
+        crossover_point = random.randint(0, min(len(individualA), len(individualB)))
+        offspringA = ""
+        offspringB = ""
+        # perform crossover
+        for i in range(0, crossover_point):
+            offspringA += individualB.get_gene(i)
+            offspringB += individualA.get_gene(i)
+
+        # persist other part of individuals dna
+        for i in range(crossover_point, len(individualA)):
+            offspringA += individualB.get_gene(i)
+
+        for i in range(crossover_point, len(individualB)):
+            offspringB += individualA.get_gene(i)
+
+        #cause random mutations
+        offspringA = self.mutate_offspring(offspringA)
+        offspringB = self.mutate_offspring(offspringB)
+
+        #create new individuals and add them to next-gen population
+        personA = Chromosome(offspringA)
+        personB = Chromosome(offspringB)
+        self.add_individual(personA)
+        self.add_individual(personB)
+
+
+
+if __name__ == '__main__':
+    genetic_algorithm = Evolution(8)
+    genetic_algorithm.evolve()
