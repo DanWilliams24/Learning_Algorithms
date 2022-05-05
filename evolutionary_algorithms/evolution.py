@@ -57,7 +57,23 @@ class Evolution:
             bitstring = ""
             for _ in range(self.bitstring_length):
                 bitstring += str(random.randint(0, 1))
-            self.add_individual(Chromosome(bitstring))
+            self.add_individual(Chromosome())
+
+    def check_for_termination(self):
+        # termination buffer stores a list of recent fitness measurements
+        # we take the points in the buffer and calculate the slope
+        # if zero return 0
+        avg_X = sum(range(1, len(self.termination_buffer) + 1)) / len(self.termination_buffer)
+        avg_Y = sum(self.termination_buffer) / len(self.termination_buffer)
+
+        summation = 0
+        least_squares = 0
+        for i in range(len(self.termination_buffer)):
+            summation += ((i + 1) - avg_X) * (self.termination_buffer[i] - avg_Y)
+            least_squares += ((i + 1) - avg_X) ** 2
+
+        slope = summation / least_squares
+        return
 
     def evolve(self):
         # create population

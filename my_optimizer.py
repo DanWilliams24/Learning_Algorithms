@@ -1,6 +1,4 @@
 import numpy as np
-from numpy import arange
-from numpy import meshgrid
 from matplotlib import pyplot
 import matplotlib.pyplot as plt
 
@@ -14,10 +12,10 @@ def show_3D():
     # define range for input
     r_min, r_max = -1.0, 1.0
     # sample input range uniformly at 0.1 increments
-    xaxis = arange(r_min, r_max, 0.1)
-    yaxis = arange(r_min, r_max, 0.1)
+    xaxis = np.arange(r_min, r_max, 0.1)
+    yaxis = np.arange(r_min, r_max, 0.1)
     # create a mesh from the axis
-    x, y = meshgrid(xaxis, yaxis)
+    x, y = np.meshgrid(xaxis, yaxis)
     # compute targets
     results = objective(x, y)
     # create a surface plot with the jet color scheme
@@ -32,10 +30,10 @@ def show_2D():
     # define range for input
     bounds = np.asarray([[-1.0, 1.0], [-1.0, 1.0]])
     # sample input range uniformly at 0.1 increments
-    xaxis = arange(bounds[0, 0], bounds[0, 1], 0.1)
-    yaxis = arange(bounds[1, 0], bounds[1, 1], 0.1)
+    xaxis = np.arange(bounds[0, 0], bounds[0, 1], 0.1)
+    yaxis = np.arange(bounds[1, 0], bounds[1, 1], 0.1)
     # create a mesh from the axis
-    x, y = meshgrid(xaxis, yaxis)
+    x, y = np.meshgrid(xaxis, yaxis)
     # compute targets
     results = objective(x, y)
     # create a filled contour plot with 50 levels and jet color scheme
@@ -51,7 +49,7 @@ def test_gradient(x):
 
 
 def gradient_descent(gradient, start, learning_rate, n_iterations, tolerance=1e-02):
-    x_axis = arange(-100, 101, 1)
+    x_axis = np.arange(-100, 101, 1)
     y_axis = test_func(x_axis)
 
     # plot base function in blue
